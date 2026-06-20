@@ -35,11 +35,66 @@ margin-top:10px;
 font-size:1.1rem;
 }
 
+.search-container{
+width:90%;
+max-width:600px;
+margin:30px auto 20px;
+position:relative;
+}
+
+.search-box{
+width:100%;
+padding:15px 20px;
+border:2px solid #ff6b6b;
+border-radius:25px;
+font-size:1rem;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+transition:.3s;
+}
+
+.search-box:focus{
+outline:none;
+box-shadow:0 8px 20px rgba(255,107,107,.3);
+border-color:#ff9f43;
+}
+
+.search-icon{
+position:absolute;
+right:15px;
+top:50%;
+transform:translateY(-50%);
+font-size:1.3rem;
+color:#ff6b6b;
+pointer-events:none;
+}
+
 .container{
 width:90%;
 max-width:1200px;
 margin:auto;
 padding:40px 0;
+}
+
+.filter-info{
+text-align:center;
+margin-bottom:30px;
+color:#666;
+font-size:1.1rem;
+}
+
+.filter-info.hidden{
+display:none;
+}
+
+.no-results{
+text-align:center;
+padding:50px 20px;
+color:#999;
+}
+
+.no-results-icon{
+font-size:3rem;
+margin-bottom:15px;
 }
 
 .products{
@@ -58,6 +113,11 @@ transition:.3s;
 
 .card:hover{
 transform:translateY(-5px);
+box-shadow:0 8px 25px rgba(0,0,0,.15);
+}
+
+.card.hidden{
+display:none;
 }
 
 .card img{
@@ -73,18 +133,30 @@ text-align:center;
 
 .card h3{
 color:#ff6b6b;
+font-size:1.5rem;
+margin-bottom:8px;
+}
+
+.card-description{
+color:#666;
+font-size:0.95rem;
+margin-bottom:10px;
 }
 
 .price{
 font-size:20px;
 font-weight:bold;
 margin:10px 0;
+color:#ff6b6b;
 }
 
 input[type="number"]{
 width:80px;
 padding:8px;
 text-align:center;
+border:1px solid #ddd;
+border-radius:5px;
+margin-top:8px;
 }
 
 .order-form{
@@ -95,8 +167,20 @@ border-radius:15px;
 box-shadow:0 5px 15px rgba(0,0,0,.1);
 }
 
+.order-form h2{
+color:#ff6b6b;
+margin-bottom:20px;
+}
+
 .form-group{
 margin-bottom:15px;
+}
+
+.form-group label{
+display:block;
+margin-bottom:8px;
+color:#333;
+font-weight:500;
 }
 
 .form-group input,
@@ -105,6 +189,15 @@ width:100%;
 padding:12px;
 border:1px solid #ddd;
 border-radius:8px;
+font-size:1rem;
+transition:.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus{
+outline:none;
+border-color:#ff6b6b;
+box-shadow:0 0 8px rgba(255,107,107,.2);
 }
 
 button{
@@ -115,10 +208,18 @@ padding:15px 25px;
 border-radius:8px;
 cursor:pointer;
 font-size:16px;
+font-weight:bold;
+transition:.3s;
 }
 
 button:hover{
 background:#fa5252;
+transform:translateY(-2px);
+box-shadow:0 5px 15px rgba(255,107,107,.3);
+}
+
+button:active{
+transform:translateY(0);
 }
 
 .summary{
@@ -126,6 +227,27 @@ margin-top:20px;
 padding:20px;
 background:#fff3f3;
 border-radius:10px;
+border-left:4px solid #ff6b6b;
+}
+
+.summary h3{
+color:#ff6b6b;
+margin-bottom:15px;
+}
+
+.summary-item{
+display:flex;
+justify-content:space-between;
+margin:10px 0;
+}
+
+.summary-item-label{
+color:#666;
+}
+
+.summary-item-value{
+font-weight:bold;
+color:#333;
 }
 
 footer{
@@ -134,6 +256,57 @@ color:white;
 text-align:center;
 padding:20px;
 margin-top:50px;
+}
+
+@media (max-width:768px){
+header h1{
+font-size:2rem;
+}
+
+.search-box{
+font-size:0.95rem;
+padding:12px 15px;
+}
+
+.products{
+grid-template-columns:1fr;
+}
+
+.order-form{
+padding:20px;
+}
+
+.summary{
+padding:15px;
+}
+}
+
+.quick-sort{
+margin:20px 0;
+text-align:center;
+}
+
+.sort-btn{
+display:inline-block;
+padding:8px 15px;
+margin:0 5px;
+background:white;
+color:#ff6b6b;
+border:2px solid #ff6b6b;
+border-radius:20px;
+cursor:pointer;
+font-size:0.9rem;
+transition:.3s;
+}
+
+.sort-btn.active{
+background:#ff6b6b;
+color:white;
+}
+
+.sort-btn:hover{
+background:#ff6b6b;
+color:white;
 }
 </style>
 </head>
@@ -144,68 +317,101 @@ margin-top:50px;
 <p>Fresh Cakes, Popcorn, Cupcakes & Refreshing Mocktails</p>
 </header>
 
+<div class="search-container">
+<input 
+type="text" 
+id="searchBox" 
+class="search-box" 
+placeholder="🔍 Search products..." 
+onkeyup="searchProducts()"
+>
+<span class="search-icon">🔎</span>
+</div>
+
 <div class="container">
 
-<div class="products">
+<div class="filter-info hidden" id="filterInfo">
+Showing results for: <strong id="searchTerm"></strong>
+<span style="margin-left:15px;">
+<button class="sort-btn active" onclick="filterByPrice('all')">All</button>
+<button class="sort-btn" onclick="filterByPrice('budget')">Budget (₦0-3k)</button>
+<button class="sort-btn" onclick="filterByPrice('mid')">Mid Range (₦3k-5k)</button>
+<button class="sort-btn" onclick="filterByPrice('premium')">Premium (₦5k+)</button>
+</span>
+</div>
 
-<div class="card">
+<div class="products" id="productsContainer">
+
+<div class="card" data-name="Popcorn" data-price="1500" data-category="snack">
 <img src="https://images.unsplash.com/photo-1585647347384-2593bc35786b?w=800" alt="Popcorn">
 <div class="card-content">
 <h3>Popcorn</h3>
+<p class="card-description">Crispy & Delicious</p>
 <p class="price">₦1,500</p>
 Qty:
-<input type="number" id="popcorn" value="0" min="0">
+<input type="number" id="popcorn" value="0" min="0" data-item="popcorn">
 </div>
 </div>
 
-<div class="card">
+<div class="card" data-name="Cake" data-price="8000" data-category="cake">
 <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800" alt="Cake">
 <div class="card-content">
 <h3>Cake</h3>
+<p class="card-description">Fresh & Moist</p>
 <p class="price">₦8,000</p>
 Qty:
-<input type="number" id="cake" value="0" min="0">
+<input type="number" id="cake" value="0" min="0" data-item="cake">
 </div>
 </div>
 
-<div class="card">
+<div class="card" data-name="Mocktail" data-price="2500" data-category="beverage">
 <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=800" alt="Mocktail">
 <div class="card-content">
 <h3>Mocktail</h3>
+<p class="card-description">Refreshing & Cool</p>
 <p class="price">₦2,500</p>
 Qty:
-<input type="number" id="mocktail" value="0" min="0">
+<input type="number" id="mocktail" value="0" min="0" data-item="mocktail">
 </div>
 </div>
 
-<div class="card">
+<div class="card" data-name="Cupcake" data-price="1000" data-category="sweet">
 <img src="https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=800" alt="Cupcake">
 <div class="card-content">
 <h3>Cupcake</h3>
+<p class="card-description">Sweet & Fluffy</p>
 <p class="price">₦1,000</p>
 Qty:
-<input type="number" id="cupcake" value="0" min="0">
+<input type="number" id="cupcake" value="0" min="0" data-item="cupcake">
 </div>
 </div>
 
+</div>
+
+<div class="no-results hidden" id="noResults">
+<div class="no-results-icon">🔍</div>
+<p>Sorry, no products match your search. Try a different keyword!</p>
 </div>
 
 <div class="order-form">
-<h2>Customer Information</h2>
+<h2>📋 Customer Information</h2>
 
 <div class="form-group">
-<input type="text" id="name" placeholder="Full Name">
+<label for="name">Full Name</label>
+<input type="text" id="name" placeholder="Enter your full name">
 </div>
 
 <div class="form-group">
-<input type="tel" id="phone" placeholder="Phone Number">
+<label for="phone">Phone Number</label>
+<input type="tel" id="phone" placeholder="Enter your phone number">
 </div>
 
 <div class="form-group">
-<textarea id="address" rows="4" placeholder="Delivery Address"></textarea>
+<label for="address">Delivery Address</label>
+<textarea id="address" rows="4" placeholder="Enter your delivery address"></textarea>
 </div>
 
-<button onclick="generateOrder()">Generate Order</button>
+<button onclick="generateOrder()">📱 Generate Order</button>
 
 <div id="summary"></div>
 
@@ -216,11 +422,94 @@ Qty:
 <footer>
 <h3>DD Tasty Confectionaries</h3>
 <p>Delicious treats for every occasion ❤️</p>
+<p style="margin-top:10px;font-size:0.9rem;">© 2024 All Rights Reserved</p>
 </footer>
 
 <script>
-function generateOrder(){
+let allCards = [];
+let currentPriceFilter = 'all';
 
+function initializeCards(){
+const container = document.getElementById('productsContainer');
+allCards = Array.from(container.querySelectorAll('.card'));
+}
+
+function searchProducts(){
+const searchBox = document.getElementById('searchBox');
+const searchTerm = searchBox.value.toLowerCase().trim();
+const filterInfo = document.getElementById('filterInfo');
+const noResults = document.getElementById('noResults');
+const productsContainer = document.getElementById('productsContainer');
+
+if(searchTerm === ''){
+allCards.forEach(card => card.classList.remove('hidden'));
+filterInfo.classList.add('hidden');
+noResults.classList.add('hidden');
+return;
+}
+
+document.getElementById('searchTerm').textContent = searchTerm;
+filterInfo.classList.remove('hidden');
+
+let visibleCount = 0;
+
+allCards.forEach(card => {
+const name = card.getAttribute('data-name').toLowerCase();
+const category = card.getAttribute('data-category').toLowerCase();
+const price = card.getAttribute('data-price');
+
+const matchesSearch = name.includes(searchTerm) || category.includes(searchTerm);
+const matchesPrice = applyPriceFilter(price);
+
+if(matchesSearch && matchesPrice){
+card.classList.remove('hidden');
+visibleCount++;
+}else{
+card.classList.add('hidden');
+}
+});
+
+if(visibleCount === 0){
+noResults.classList.remove('hidden');
+}else{
+noResults.classList.add('hidden');
+}
+}
+
+function filterByPrice(range){
+currentPriceFilter = range;
+
+document.querySelectorAll('.sort-btn').forEach(btn => {
+btn.classList.remove('active');
+});
+event.target.classList.add('active');
+
+const searchBox = document.getElementById('searchBox');
+const searchTerm = searchBox.value.toLowerCase().trim();
+
+if(searchTerm === ''){
+return;
+}
+
+searchProducts();
+}
+
+function applyPriceFilter(price){
+price = parseInt(price);
+
+switch(currentPriceFilter){
+case 'budget':
+return price <= 3000;
+case 'mid':
+return price > 3000 && price <= 5000;
+case 'premium':
+return price > 5000;
+default:
+return true;
+}
+}
+
+function generateOrder(){
 const prices = {
 popcorn:1500,
 cake:8000,
@@ -243,6 +532,16 @@ const name = document.getElementById("name").value;
 const phone = document.getElementById("phone").value;
 const address = document.getElementById("address").value;
 
+if(!name || !phone || !address){
+alert('Please fill in all customer information fields!');
+return;
+}
+
+if(total === 0){
+alert('Please select at least one item!');
+return;
+}
+
 const orderText =
 `Hello DD Tasty Confectionaries,
 
@@ -261,18 +560,35 @@ Total: ₦${total.toLocaleString()}
 
 document.getElementById("summary").innerHTML = `
 <div class="summary">
-<h3>Order Summary</h3>
-<p><strong>Name:</strong> ${name}</p>
-<p><strong>Total:</strong> ₦${total.toLocaleString()}</p>
-
+<h3>✓ Order Summary</h3>
+<div class="summary-item">
+<span class="summary-item-label">Customer Name:</span>
+<span class="summary-item-value">${name}</span>
+</div>
+<div class="summary-item">
+<span class="summary-item-label">Phone:</span>
+<span class="summary-item-value">${phone}</span>
+</div>
+<div class="summary-item">
+<span class="summary-item-label">Items:</span>
+<span class="summary-item-value">${popcorn + cake + mocktail + cupcake} item(s)</span>
+</div>
+<div class="summary-item">
+<span class="summary-item-label">Total Price:</span>
+<span class="summary-item-value">₦${total.toLocaleString()}</span>
+</div>
 <br>
-
-<a href="https://wa.me/2348000000000?text=${encodeURIComponent(orderText)}" target="_blank">
-<button>Order on WhatsApp</button>
+<a href="https://wa.me/2348000000000?text=${encodeURIComponent(orderText)}" target="_blank" style="text-decoration:none;">
+<button>✓ Order on WhatsApp</button>
 </a>
 </div>
 `;
+
+window.scrollTo({ top: document.getElementById('summary').offsetTop - 100, behavior: 'smooth' });
 }
+
+// Initialize on page load
+window.addEventListener('DOMContentLoaded', initializeCards);
 </script>
 
 </body>
