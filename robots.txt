@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://danieladeolaeli-wq.github.io/DD-TASTY-CONFECTIONARIES/sitemap.xml
