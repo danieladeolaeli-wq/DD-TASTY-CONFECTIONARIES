@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DD Tasty Confectionaries</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#fff8f5;
+}
+
+header{
+background:linear-gradient(135deg,#ff6b6b,#ff9f43);
+color:white;
+text-align:center;
+padding:50px 20px;
+}
+
+header h1{
+font-size:3rem;
+}
+
+header p{
+margin-top:10px;
+font-size:1.1rem;
+}
+
+.container{
+width:90%;
+max-width:1200px;
+margin:auto;
+padding:40px 0;
+}
+
+.products{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:25px;
+}
+
+.card{
+background:white;
+border-radius:15px;
+overflow:hidden;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card img{
+width:100%;
+height:220px;
+object-fit:cover;
+}
+
+.card-content{
+padding:20px;
+text-align:center;
+}
+
+.card h3{
+color:#ff6b6b;
+}
+
+.price{
+font-size:20px;
+font-weight:bold;
+margin:10px 0;
+}
+
+input[type="number"]{
+width:80px;
+padding:8px;
+text-align:center;
+}
+
+.order-form{
+background:white;
+padding:30px;
+margin-top:50px;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+
+.form-group{
+margin-bottom:15px;
+}
+
+.form-group input,
+.form-group textarea{
+width:100%;
+padding:12px;
+border:1px solid #ddd;
+border-radius:8px;
+}
+
+button{
+background:#ff6b6b;
+color:white;
+border:none;
+padding:15px 25px;
+border-radius:8px;
+cursor:pointer;
+font-size:16px;
+}
+
+button:hover{
+background:#fa5252;
+}
+
+.summary{
+margin-top:20px;
+padding:20px;
+background:#fff3f3;
+border-radius:10px;
+}
+
+footer{
+background:#222;
+color:white;
+text-align:center;
+padding:20px;
+margin-top:50px;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>DD Tasty Confectionaries</h1>
+<p>Fresh Cakes, Popcorn, Cupcakes & Refreshing Mocktails</p>
+</header>
+
+<div class="container">
+
+<div class="products">
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1585647347384-2593bc35786b?w=800" alt="Popcorn">
+<div class="card-content">
+<h3>Popcorn</h3>
+<p class="price">₦1,500</p>
+Qty:
+<input type="number" id="popcorn" value="0" min="0">
+</div>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800" alt="Cake">
+<div class="card-content">
+<h3>Cake</h3>
+<p class="price">₦8,000</p>
+Qty:
+<input type="number" id="cake" value="0" min="0">
+</div>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=800" alt="Mocktail">
+<div class="card-content">
+<h3>Mocktail</h3>
+<p class="price">₦2,500</p>
+Qty:
+<input type="number" id="mocktail" value="0" min="0">
+</div>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=800" alt="Cupcake">
+<div class="card-content">
+<h3>Cupcake</h3>
+<p class="price">₦1,000</p>
+Qty:
+<input type="number" id="cupcake" value="0" min="0">
+</div>
+</div>
+
+</div>
+
+<div class="order-form">
+<h2>Customer Information</h2>
+
+<div class="form-group">
+<input type="text" id="name" placeholder="Full Name">
+</div>
+
+<div class="form-group">
+<input type="tel" id="phone" placeholder="Phone Number">
+</div>
+
+<div class="form-group">
+<textarea id="address" rows="4" placeholder="Delivery Address"></textarea>
+</div>
+
+<button onclick="generateOrder()">Generate Order</button>
+
+<div id="summary"></div>
+
+</div>
+
+</div>
+
+<footer>
+<h3>DD Tasty Confectionaries</h3>
+<p>Delicious treats for every occasion ❤️</p>
+</footer>
+
+<script>
+function generateOrder(){
+
+const prices = {
+popcorn:1500,
+cake:8000,
+mocktail:2500,
+cupcake:1000
+};
+
+const popcorn = Number(document.getElementById("popcorn").value);
+const cake = Number(document.getElementById("cake").value);
+const mocktail = Number(document.getElementById("mocktail").value);
+const cupcake = Number(document.getElementById("cupcake").value);
+
+const total =
+(popcorn * prices.popcorn) +
+(cake * prices.cake) +
+(mocktail * prices.mocktail) +
+(cupcake * prices.cupcake);
+
+const name = document.getElementById("name").value;
+const phone = document.getElementById("phone").value;
+const address = document.getElementById("address").value;
+
+const orderText =
+`Hello DD Tasty Confectionaries,
+
+Name: ${name}
+Phone: ${phone}
+Address: ${address}
+
+Order:
+Popcorn: ${popcorn}
+Cake: ${cake}
+Mocktail: ${mocktail}
+Cupcake: ${cupcake}
+
+Total: ₦${total.toLocaleString()}
+`;
+
+document.getElementById("summary").innerHTML = `
+<div class="summary">
+<h3>Order Summary</h3>
+<p><strong>Name:</strong> ${name}</p>
+<p><strong>Total:</strong> ₦${total.toLocaleString()}</p>
+
+<br>
+
+<a href="https://wa.me/2348000000000?text=${encodeURIComponent(orderText)}" target="_blank">
+<button>Order on WhatsApp</button>
+</a>
+</div>
+`;
+}
+</script>
+
+</body>
+</html>
